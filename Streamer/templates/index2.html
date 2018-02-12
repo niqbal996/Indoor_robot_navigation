@@ -1,0 +1,147 @@
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+    <style>
+          .centered {
+            margin: 0 auto;
+            text-align: center;
+            width: 100px;
+            height: 100px;
+          }
+          .divcenter {
+            margin: 0 auto;
+            text-align: center;
+          }
+          .button{
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+          }
+    </style>
+  </head>
+  <body>
+  <div class="divcenter">
+    <h1>Video Stream from Raspi</h1>
+    <img align="center" id="bg" src="{{ url_for('video_feed') }}">
+    <h1>Navigation input</h1>
+
+    <!--<img src="forward.png" class="centered" id="f" onmousedown="set01()" onmouseup="clear01(event)">-->
+<!--<br>-->
+    <!--<img src="left.png" class="centered" id="l" onmousedown="set0()" onmouseup="clear01(event)">-->
+    <!--<img src="right.png" class="centered" id="r" onmousedown="set1()" onmouseup="clear01(event)">-->
+<!--<br>-->
+    <!--<img src="stop.png" class="centered" id="s" onmousedown="clear01(event)" onmouseup="clear01(event)">-->
+
+    <button onmousedown="set01()" onmouseup="clear01(event)" class="button" onclick="setColor('button', '#101010')"> Forward </button>
+    <button onmousedown="set0()" onmouseup="clear01(event)" class="button" onclick="setColor('button', '#101010')"> Left </button>
+    <button onmousedown="set1()" onmouseup="clear01(event)" class="button" onclick="setColor('button', '#101010')"> Right </button>
+    <button onmousedown="clear01(event)" onmouseup="clear01(event)" class="button" onclick="setColor('button', '#101010')"> Stop </button>
+
+
+  </div>
+  </body>
+  <script type="text/javascript" src="/webiopi.js"></script>
+  <script type="text/javascript">
+     document.onkeydown = function(e) {
+         var key = e.keyCode ? e.keyCode : e.which;
+         switch (key) {
+             case 37: //left
+                 document.getElementById('left').style.backgroundColor = "yellow";
+                 break;
+             case 38: //up
+                 //playerSpriteX += 10;
+                 document.getElementById('up').style.backgroundColor = "green";
+                 break;
+             case 39: //right
+                 document.getElementById('right').style.backgroundColor = "blue";
+                 break;
+             //}//else if (key == 40) {
+             case 40: //down
+                 //playerSpriteX -= 10;
+                 document.getElementById('down').style.backgroundColor = "red";
+                 break;
+
+         }//};
+     }
+     document.onkeyup = function(e) {
+         var key = e.keyCode ? e.keyCode : e.which;
+         switch (key) {
+             case 37: //left
+                 document.getElementById('left').style.backgroundColor = "grey";
+                 //webiopi().callMacro("go_forward");
+                 break;
+             case 38: //up
+                 //playerSpriteX += 10;
+                 document.getElementById('up').style.backgroundColor = "grey";
+                 //webiopi().callMacro("go_backward");
+                 break;
+             case 39: //right
+                 document.getElementById('right').style.backgroundColor = "grey";
+                 //webiopi().callMacro("turn_right");
+                 break;
+             //}//else if (key == 40) {
+             case 40: //down
+                 //playerSpriteX -= 10;
+                 document.getElementById('down').style.backgroundColor = "grey";
+                 //webiopi().callMacro("stop");
+                 break;
+
+         }//};
+     }
+     //#########    Functions for browser buttons ##############################////////////////////////////////////////
+     //###############################################################################////////////////////////////////////////
+     //###############################################################################////////////////////////////////////////
+
+//     function init() {
+//         var button;
+//
+//         button = webiopi().createButton("bt_up", "/\\", go_forward, stop);
+//         $("#up").append(button);
+//
+//         button = webiopi().createButton("bt_left", "<", turn_left, stop);
+//         $("#middle").append(button);
+//
+//         button = webiopi().createButton("bt_stop", "X", stop);
+//         $("#middle").append(button);
+//
+//         button = webiopi().createButton("bt_right", ">", turn_right, stop);
+//         $("#middle").append(button);
+//
+//         button = webiopi().createButton("bt_down", "\\/", go_backward, stop);
+//         $("#down").append(button);
+//     }
+////#########    Functions for movement of the robot ##############################////////////////////////////////////////
+////###############################################################################////////////////////////////////////////
+////###############################################################################////////////////////////////////////////
+//
+//     function go_forward() {
+//         webiopi().callMacro("go_forward");
+//     }
+//
+//     function go_backward() {
+//         webiopi().callMacro("go_backward");
+//     }
+//
+//     function turn_right() {
+//         webiopi().callMacro("turn_right");
+//     }
+//
+//     function turn_left() {
+//         webiopi().callMacro("turn_left");
+//     }
+//
+//     function stop() {
+//         webiopi().callMacro("stop");
+//     }
+//
+//     webiopi().ready(init);
+
+
+  </script>
+
+</html>

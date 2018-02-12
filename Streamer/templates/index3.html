@@ -1,0 +1,82 @@
+<html>
+<head>
+    <title>Video Streaming Demonstration WEBIOPI</title>
+</head>
+<body>
+<h1>Video Streaming Demonstration WEBIOPI</h1>
+<img id="bg" src="{{ url_for('video_feed') }}">
+</body>
+<script type="text/javascript" src="/webiopi.js"></script>
+<script type="text/javascript">
+
+    //#########    Functions for browser buttons ##############################////////////////////////////////////////
+    //###############################################################################////////////////////////////////////////
+    //###############################################################################////////////////////////////////////////
+
+    function init() {
+        var button;
+
+        button = webiopi().createButton("bt_up", "/\\", go_forward, stop);
+        $("#up").append(button);
+
+        button = webiopi().createButton("bt_left", "<", turn_left, stop);
+        $("#middle").append(button);
+
+        button = webiopi().createButton("bt_stop", "X", stop);
+        $("#middle").append(button);
+
+        button = webiopi().createButton("bt_right", ">", turn_right, stop);
+        $("#middle").append(button);
+
+        button = webiopi().createButton("bt_down", "\\/", go_backward, stop);
+        $("#down").append(button);
+    }
+    //#########    Functions for movement of the robot ##############################////////////////////////////////////////
+    //###############################################################################////////////////////////////////////////
+    //###############################################################################////////////////////////////////////////
+
+    function go_forward() {
+        webiopi().callMacro("go_forward");
+    }
+
+    function go_backward() {
+        webiopi().callMacro("go_backward");
+    }
+
+    function turn_right() {
+        webiopi().callMacro("turn_right");
+    }
+
+    function turn_left() {
+        webiopi().callMacro("turn_left");
+    }
+
+    function stop() {
+        webiopi().callMacro("stop");
+    }
+
+    webiopi().ready(init);
+
+
+</script>
+
+<style type="text/css">
+    button {
+        margin: 5px 5px 5px 5px;
+        width: 50px;
+        height: 50px;
+        font-size: 24pt;
+        font-weight: bold;
+        color: black;
+    }
+</style>
+</head>
+<body>
+<div id="content" align="center">
+    <img width="320" height="240" src="http://raspberrypi:8001/?action=stream"><br/>
+    <div id="up"></div>
+    <div id="middle"></div>
+    <div id="down"></div>
+</div>
+</body>
+</html>

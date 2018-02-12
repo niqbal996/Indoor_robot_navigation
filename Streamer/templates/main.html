@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Keystroke</title>
+    <script>
+        keypress(){
+            switch (e.keyCode) {
+                case 37:
+                    alert('left');
+                    break;
+                case 38:
+                    alert('up');
+                    break;
+                case 39:
+                    alert('right');
+                    break;
+                case 40:
+                    alert('down');
+                    break;
+            }
+        };
+    </script>
+
+</head>
+<body>
+
+<h2>What Can JavaScript Do?</h2>
+
+<p id="demo">JavaScript can change HTML content.</p>
+
+<button type="button" onkeydown='document.getElementById("demo").innerHTML = "Hello JavaScript!"'>Click Me!</button>
+<!--button type="button" onkeydown=keypress()> PUSH </button-->
+
+</body>
+</html>
