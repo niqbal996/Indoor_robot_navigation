@@ -12,7 +12,7 @@ ap.add_argument("-m", "--model", required=True,
 #ap.add_argument("-i", "--image", required=True,
 #        help="path to input image")
 args = vars(ap.parse_args())
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('Log_video_11.avi')
 
 # load the trained convolutional neural network
 print("[INFO] loading network...")
@@ -58,7 +58,7 @@ while(True):
 								3)													#line thickness of the bounding box
 			cv2.putText(orig,
 						str(proba),
-						(10, (80+160 * (sub_frame-1))),
+						((80+160 * (sub_frame-1)), 10),
 						 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 		else:
 			cv2.rectangle(orig, (int(round((image.shape[1] / 4) * (sub_frame - 1))), 0),  # top left point of the bbox
@@ -72,5 +72,5 @@ while(True):
 			break
 
 	toc = time.time()
-	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (470, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
