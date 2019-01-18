@@ -44,7 +44,7 @@ while(True):
 		# build the label
 		label = "Door" if door > notDoor else "Not Door"
 		proba = door if door > notDoor else notDoor
-		label = "{}: {:.2f}%".format(label, proba * 100)
+		label_with_proba = "{}: {:.2f}%".format(label, proba * 100)
 
 		# draw the label on the image
 		#output = imutils.resize(orig, width=400)
@@ -56,12 +56,15 @@ while(True):
 								(int(round((image.shape[1] / 4) * sub_frame)),image.shape[1]),#bottom right point of the bbox
 								(0, 255, 0),										#green color of the bounding box
 								3)													#line thickness of the bounding box
+			cv2.putText(orig,
+						str(proba),
+						(10, (80+160 * (sub_frame-1)),
+						 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2))
 		else:
 			cv2.rectangle(orig, (int(round((image.shape[1] / 4) * (sub_frame - 1))), 0),  # top left point of the bbox
 								(int(round((image.shape[1] / 4) * sub_frame)), image.shape[1]),  # bottom right point of the bbox
 								(0, 0, 255),  # red color
 								3)  # line thickness of the bounding box
-
 
 		#print str((toc - tic)) + " Seconds"
 		# show the output image
@@ -69,5 +72,5 @@ while(True):
 			break
 
 	toc = time.time()
-	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (470, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
