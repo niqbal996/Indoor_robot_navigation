@@ -58,7 +58,7 @@ while(True):
 								3)													#line thickness of the bounding box
 			cv2.putText(orig,
 						str(proba),
-						((80+160 * (sub_frame-1)), 10),
+						((20+160 * (sub_frame-1)), 30),
 						 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 		else:
 			cv2.rectangle(orig, (int(round((image.shape[1] / 4) * (sub_frame - 1))), 0),  # top left point of the bbox
