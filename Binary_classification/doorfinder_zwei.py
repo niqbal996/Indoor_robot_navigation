@@ -74,3 +74,5 @@ while(True):
 	toc = time.time()
 	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
+
+cap.release()
