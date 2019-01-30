@@ -5,14 +5,16 @@ import argparse
 import cv2
 import time
 import serial.tools.list_ports
-
+from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 
 # for moving anything
 # [137][velocity high byte][velocity low byte][radius high byte][radius low byte]
 # to move straight : radius = 32768 or 0x8000
 # to rotate in place : radius = 0x0001
 
-velocity = 200 #in mm/s
+velocity = 20 #in mm/s
+angle_steps = 30
+distance_steps=150
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
 #open Raspi GPIO serial port, speed 115200 for Roomba 5xx
@@ -43,10 +45,6 @@ time.sleep(1)
 ser.write(b'\x82')
 time.sleep(2)
 
-# Vacuum motors on:
-ser.write(b'\x8a\x07')
-time.sleep(0.2)
-
 position_vector = [0, 0, 0, 0]
 while(True):
 	tic = time.time()
@@ -60,16 +58,9 @@ while(True):
 	position_vector = [0, 0, 0, 0]
 	#Scan the room rotate in steps very slowly
 	rn = np.random.random(1)
-	#print("nr =", rn)
-	radius =  30 #int((rn[0] - 0.5) * 4000.0)     # rotate 30 degree in each step and then scan the images.
-	# if radius < 0:
-	# 	radius += 2 ** 16 - 1
-	#print("Radius= ", radius)
-	# go forward
-	# ser.write(b'\x89\x00\xfa'+chr(radius/256)+chr(radius%256))
-	# slower:
-	ser.write(b'\x89\x00\x80' + chr(radius / 256) + chr(radius % 256))
 	print ('[INFO] Turning and scanning now . . . ')
+	roomba_rotate(ser, 30,velocity)
+	time.sleep(0.2)
 	for sub_frame in range(1, 5):
 		#Extract the subsection of the image.
 		left = int(round((image.shape[0] / 4) * (sub_frame - 1)))
@@ -119,25 +110,18 @@ while(True):
 	if position_vector[1] == 1  and position_vector[2] == 1:
 		# Move towards the door slowly
 		print('[INFO] Moving forward . . .')
-		ser.write(b'\x89'+chr(velocity/256)+chr(velocity%256)+b'\x80\x00')
-		# now stop roomba
-		ser.write(b'\x89\x00\x00\x00\x00')
+		roomba_move(ser,distance_steps,velocity)
 	# Turn left
 	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
 		print ('[INFO] Turning left 30 degrees now')
-		ser.write(b'\x89' + chr(velocity / 256) + chr(velocity % 256) + b'\x00\x01')
-		time.sleep(0.2)
-		#now stop roomba
-		ser.write(b'\x89\x00\x00\x00\x00')
+		roomba_rotate(ser,angle_steps,velocity)
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
 		print ('[INFO] Turning right 30 degrees now')
-		ser.write(b'\x89' + chr(velocity / 256) + chr(velocity % 256) + b'\x00\x01')
-		time.sleep(0.2)
-		# now stop roomba
-		ser.write(b'\x89\x00\x00\x00\x00')
+		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
 	else:
 		print('[INFO] Continue scanning for door frames . . .')
+		roomba_rotate(ser, angle_steps, velocity) # Keep looking until u find the door
 
 	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
@@ -145,9 +129,6 @@ while(True):
 		break
 #stop,speed 0:
 ser.write(b'\x89\x00\x00\x00\x00')
-time.sleep(0.2)
-#vacuum motors off:
-ser.write(b'\x8a\x00')
 time.sleep(0.2)
 print("close")
 ser.close()
