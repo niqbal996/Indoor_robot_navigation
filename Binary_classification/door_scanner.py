@@ -22,7 +22,8 @@ ap.add_argument("-m", "--model", required=True,
 #ap.add_argument("-i", "--image", required=True,
 #        help="path to input image")
 args = vars(ap.parse_args())
-cap = cv2.VideoCapture('Log_video_1.avi')
+#cap = cv2.VideoCapture(0)       			#Feed from camera
+cap = cv2.VideoCapture('Log_video_1.avi')	#Feed from video recording
 
 # load the trained convolutional neural network
 print("[INFO] loading network...")
@@ -44,17 +45,19 @@ position_vector = [0, 0, 0, 0]
 while(True):
 	tic = time.time()
 	ret, image = cap.read()
+	if ret ==  False: #GET OUT
+		break
 	orig = image.copy()
 
 	# Reset the position vector for each frame
 	position_vector = [0, 0, 0, 0]
 	#Scan the room rotate in steps very slowly
 	rn = np.random.random(1)
-	print("nr =", rn)
-	radius = int((rn[0] - 0.5) * 4000.0)
+	#print("nr =", rn)
+	radius =  30 #int((rn[0] - 0.5) * 4000.0)     # rotate 30 degree in each step and then scan the images.
 	if radius < 0:
 		radius += 2 ** 16 - 1
-	print("Radius= ", radius)
+	#print("Radius= ", radius)
 	# go forward
 	# ser.write(b'\x89\x00\xfa'+chr(radius/256)+chr(radius%256))
 	# slower:
@@ -94,7 +97,7 @@ while(True):
 			#Write the probability of Door occurence.
 			cv2.putText(orig,
 						str(proba),
-						((80+160 * (sub_frame-1)), 10),
+						((20+160 * (sub_frame-1)), 30),
 						 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 		else:
 			cv2.rectangle(orig, (int(round((image.shape[1] / 4) * (sub_frame - 1))), 0),  # top left point of the bbox
