@@ -7,13 +7,19 @@ import time
 import serial.tools.list_ports
 
 
+# for moving anything
+# [137][velocity high byte][velocity low byte][radius high byte][radius low byte]
+# to move straight : radius = 32768 or 0x8000
+# to rotate in place : radius = 0x0001
+
+velocity = 200 #in mm/s
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
-# open Raspi GPIO serial port, speed 115200 for Roomba 5xx
-# ser = serial.Serial('/dev/ttyAMA0',115200)
-#
-# #ser = serial.Serial('/dev/ttyAMA0',57600)  # open Raspi GPIO serial port, speed 57600 for Roomba 3xx
-# print(ser.name)         # check which port was really used
+#open Raspi GPIO serial port, speed 115200 for Roomba 5xx
+ser = serial.Serial('/dev/ttyAMA0',115200)
+
+#ser = serial.Serial('/dev/ttyAMA0',57600)  # open Raspi GPIO serial port, speed 57600 for Roomba 3xx
+print(ser.name)         # check which port was really used
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -29,17 +35,17 @@ cap = cv2.VideoCapture('Log_video_1.avi')	#Feed from video recording
 print("[INFO] loading network...")
 model = load_model(args["model"])
 
-# #Start mode the Roomba
-# ser.write(b'\x80')
-# time.sleep(1)
-#
-# #Control mode:
-# ser.write(b'\x82')
-# time.sleep(2)
-#
-# # Vacuum motors on:
-# ser.write(b'\x8a\x07')
-# time.sleep(0.2)
+#Start mode the Roomba
+ser.write(b'\x80')
+time.sleep(1)
+
+#Control mode:
+ser.write(b'\x82')
+time.sleep(2)
+
+# Vacuum motors on:
+ser.write(b'\x8a\x07')
+time.sleep(0.2)
 
 position_vector = [0, 0, 0, 0]
 while(True):
@@ -47,8 +53,9 @@ while(True):
 	ret, image = cap.read()
 	if ret ==  False: #GET OUT
 		break
-	orig = image.copy()
 
+	# Gives error after last frame of video because its Nonetype so added exception for when ret ==  False
+	orig = image.copy()
 	# Reset the position vector for each frame
 	position_vector = [0, 0, 0, 0]
 	#Scan the room rotate in steps very slowly
@@ -61,8 +68,8 @@ while(True):
 	# go forward
 	# ser.write(b'\x89\x00\xfa'+chr(radius/256)+chr(radius%256))
 	# slower:
-	#ser.write(b'\x89\x00\x80' + chr(radius / 256) + chr(radius % 256))
-	#print ('[INFO] Turning and scanning now . . . ')
+	ser.write(b'\x89\x00\x80' + chr(radius / 256) + chr(radius % 256))
+	print ('[INFO] Turning and scanning now . . . ')
 	for sub_frame in range(1, 5):
 		#Extract the subsection of the image.
 		left = int(round((image.shape[0] / 4) * (sub_frame - 1)))
@@ -112,15 +119,23 @@ while(True):
 	if position_vector[1] == 1  and position_vector[2] == 1:
 		# Move towards the door slowly
 		print('[INFO] Moving forward . . .')
-		# ser.write(b'\x89\x00\x80\x80\x00')
+		ser.write(b'\x89'+chr(velocity/256)+chr(velocity%256)+b'\x80\x00')
+		# now stop roomba
+		ser.write(b'\x89\x00\x00\x00\x00')
 	# Turn left
 	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
 		print ('[INFO] Turning left 30 degrees now')
-		# ser.write(b'\x89\x00\x80\x80\x00')
+		ser.write(b'\x89' + chr(velocity / 256) + chr(velocity % 256) + b'\x00\x01')
+		time.sleep(0.2)
+		#now stop roomba
+		ser.write(b'\x89\x00\x00\x00\x00')
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
 		print ('[INFO] Turning right 30 degrees now')
-		# ser.write(b'\x89\x00\x80\x80\x00')
+		ser.write(b'\x89' + chr(velocity / 256) + chr(velocity % 256) + b'\x00\x01')
+		time.sleep(0.2)
+		# now stop roomba
+		ser.write(b'\x89\x00\x00\x00\x00')
 	else:
 		print('[INFO] Continue scanning for door frames . . .')
 
@@ -129,13 +144,13 @@ while(True):
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 #stop,speed 0:
-# ser.write(b'\x89\x00\x00\x00\x00')
-# time.sleep(0.2)
-# #vacuum motors off:
-# ser.write(b'\x8a\x00')
-# time.sleep(0.2)
-# print("close")
-# ser.close()
+ser.write(b'\x89\x00\x00\x00\x00')
+time.sleep(0.2)
+#vacuum motors off:
+ser.write(b'\x8a\x00')
+time.sleep(0.2)
+print("close")
+ser.close()
 
 # When everything done, release the capture
 cap.release()
