@@ -55,8 +55,8 @@ while(True):
 	rn = np.random.random(1)
 	#print("nr =", rn)
 	radius =  30 #int((rn[0] - 0.5) * 4000.0)     # rotate 30 degree in each step and then scan the images.
-	if radius < 0:
-		radius += 2 ** 16 - 1
+	# if radius < 0:
+	# 	radius += 2 ** 16 - 1
 	#print("Radius= ", radius)
 	# go forward
 	# ser.write(b'\x89\x00\xfa'+chr(radius/256)+chr(radius%256))
@@ -107,19 +107,27 @@ while(True):
 
 		# show the output image
 		toc = time.time()
-		if cv2.waitKey(1) & 0xFF == ord('q'):
-			break
 	#If two center values are 1 then stop the scanning phase.
+	#Go straight
 	if position_vector[1] == 1  and position_vector[2] == 1:
 		# Move towards the door slowly
 		print('[INFO] Moving forward . . .')
 		# ser.write(b'\x89\x00\x80\x80\x00')
-		cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-		cv2.imshow("Output", orig)
-		continue
+	# Turn left
+	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
+		print ('[INFO] Turning left 30 degrees now')
+		# ser.write(b'\x89\x00\x80\x80\x00')
+	#Turn right
+	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
+		print ('[INFO] Turning right 30 degrees now')
+		# ser.write(b'\x89\x00\x80\x80\x00')
 	else:
 		print('[INFO] Continue scanning for door frames . . .')
 
+	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+	cv2.imshow("Output", orig)
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
 #stop,speed 0:
 # ser.write(b'\x89\x00\x00\x00\x00')
 # time.sleep(0.2)
