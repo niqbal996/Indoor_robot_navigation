@@ -9,8 +9,8 @@ import os
 #port = Serial("/dev/ttyAMA0", baudrate=115200, timeout=3.0)
 file_counter = 0
 frame_counter = 0
-FILE_OUTPUT = 'Log_video_1.avi'
-total_frame = 200
+FILE_OUTPUT = 'Log_video_office_oleg_14.avi'
+total_frames = 400
 
 # Checks if the file exists then creates another one with higher counter.
 if os.path.isfile(FILE_OUTPUT):

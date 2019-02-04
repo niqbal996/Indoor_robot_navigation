@@ -13,7 +13,7 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 # to rotate in place : radius = 0x0001
 
 velocity = 20 #in mm/s
-angle_steps = 30
+angle_steps = 15
 distance_steps=150
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
@@ -30,8 +30,8 @@ ap.add_argument("-m", "--model", required=True,
 #ap.add_argument("-i", "--image", required=True,
 #        help="path to input image")
 args = vars(ap.parse_args())
-#cap = cv2.VideoCapture(0)       			#Feed from camera
-cap = cv2.VideoCapture('Log_video_1.avi')	#Feed from video recording
+cap = cv2.VideoCapture(0)       			#Feed from camera
+#cap = cv2.VideoCapture('Log_video_1.avi')	#Feed from video recording
 
 # load the trained convolutional neural network
 print("[INFO] loading network...")
