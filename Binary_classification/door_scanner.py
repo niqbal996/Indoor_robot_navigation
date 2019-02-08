@@ -15,6 +15,7 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 velocity = 20 #in mm/s
 angle_steps = 10
 distance_steps=150
+sleep_time = 1.5
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
 #open Raspi GPIO serial port, speed 115200 for Roomba 5xx
@@ -105,31 +106,31 @@ while(True):
 
 		# show the output image
 		toc = time.time()
-	#If two center values are 1 then stop the scanning phase.
-	#Go straight
-	if position_vector[1] == 1  and position_vector[2] == 1:
-		# Move towards the door slowly
-		print('[INFO] Moving forward . . .')
-		roomba_move(ser,distance_steps,velocity)
-		time.sleep(1)
-	# Turn left
-	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
-		print ('[INFO] Turning left 30 degrees now')
-		roomba_rotate(ser,angle_steps,velocity)
-		time.sleep(1)
-	#Turn right
-	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
-		print ('[INFO] Turning right 30 degrees now')
-		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
-		time.sleep(1)
-	else:
-		print('[INFO] Continue scanning for door frames . . .')
-		roomba_rotate(ser, angle_steps, velocity) # Keep looking until u find the door
-		time.sleep(1)
+
 	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+	#Go straight
+	if (position_vector[1] == 1  and position_vector[2] == 1) or (np.count_nonzero(position_vector) > 1):
+		# Move towards the door slowly
+		print('[INFO] Moving forward . . .')
+		roomba_move(ser,distance_steps,velocity)
+		time.sleep(sleep_time)
+	# Turn left
+	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
+		print ('[INFO] Turning left',angle_steps, ' degrees now')
+		roomba_rotate(ser,angle_steps,velocity)
+		time.sleep(sleep_time)
+	#Turn right
+	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
+		print ('[INFO] Turning right',angle_steps, 'degrees now')
+		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
+		time.sleep(sleep_time)
+	else:
+		print('[INFO] Continue looking for room exit . . .')
+		roomba_rotate(ser, angle_steps, velocity) # Keep looking until it finds the door
+		time.sleep(sleep_time)
 #stop,speed 0:
 ser.write(b'\x89\x00\x00\x00\x00')
 time.sleep(0.2)
