@@ -48,19 +48,19 @@ time.sleep(2)
 position_vector = [0, 0, 0, 0]
 while(True):
 	tic = time.time()
-	ret, image = cap.read()
-	if ret ==  False: #GET OUT
-		break
-
-	# Gives error after last frame of video because its Nonetype so added exception for when ret ==  False
-	orig = image.copy()
 	# Reset the position vector for each frame
 	position_vector = [0, 0, 0, 0]
 	#Scan the room rotate in steps very slowly
 	rn = np.random.random(1)
 	print ('[INFO] Turning and scanning now . . . ')
-	roomba_rotate(ser, 30,velocity)
-	time.sleep(0.2)
+	roomba_rotate(ser, angle_steps,velocity)
+	time.sleep(1)
+	ret, image = cap.read()
+	# Gives error after last frame of video because its Nonetype so added exception for when ret ==  False
+	if ret == False:  # GET OUT
+		break
+	#Save the original image
+	orig = image.copy()
 	for sub_frame in range(1, 5):
 		#Extract the subsection of the image.
 		left = int(round((image.shape[0] / 4) * (sub_frame - 1)))
@@ -111,18 +111,21 @@ while(True):
 		# Move towards the door slowly
 		print('[INFO] Moving forward . . .')
 		roomba_move(ser,distance_steps,velocity)
+		time.sleep(1)
 	# Turn left
 	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
 		print ('[INFO] Turning left 30 degrees now')
 		roomba_rotate(ser,angle_steps,velocity)
+		time.sleep(1)
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
 		print ('[INFO] Turning right 30 degrees now')
 		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
+		time.sleep(1)
 	else:
 		print('[INFO] Continue scanning for door frames . . .')
 		roomba_rotate(ser, angle_steps, velocity) # Keep looking until u find the door
-
+		time.sleep(1)
 	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)
 	if cv2.waitKey(1) & 0xFF == ord('q'):
