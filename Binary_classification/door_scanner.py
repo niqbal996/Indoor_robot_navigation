@@ -13,7 +13,7 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 # to rotate in place : radius = 0x0001
 
 velocity = 20 #in mm/s
-angle_steps = 15
+angle_steps = 10
 distance_steps=150
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
@@ -82,7 +82,7 @@ while(True):
 		label_with_proba = "{}: {:.2f}%".format(label, proba * 100)
 
 		#Draw bounding box on the region where door(partially) is located in the image.
-		if label == 'Door':
+		if label == 'Door' and proba > 0.70 :
 			#Change the status of position vector depending on which sub section of the image it is.
 			position_vector[sub_frame-1] = 1
 

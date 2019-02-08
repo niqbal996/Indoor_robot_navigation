@@ -12,7 +12,7 @@ ap.add_argument("-m", "--model", required=True,
 #ap.add_argument("-i", "--image", required=True,
 #        help="path to input image")
 args = vars(ap.parse_args())
-cap = cv2.VideoCapture('Log_video_11.avi')
+cap = cv2.VideoCapture(0)
 
 # load the trained convolutional neural network
 print("[INFO] loading network...")
@@ -51,7 +51,8 @@ while(True):
 		# cv2.putText(orig, label, (10, 25),  cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 
 		#Draw bounding box on the region where door(partially) is located in the image.
-		if label == 'Door':
+		print proba
+		if label == 'Door' and proba > 0.70:
 			cv2.rectangle(orig, (int(round((image.shape[1] / 4) * (sub_frame - 1))), 0), #top left point of the bbox
 								(int(round((image.shape[1] / 4) * sub_frame)),image.shape[1]),#bottom right point of the bbox
 								(0, 255, 0),										#green color of the bounding box
