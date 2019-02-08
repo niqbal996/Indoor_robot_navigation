@@ -15,7 +15,7 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 velocity = 20 #in mm/s
 angle_steps = 10
 distance_steps=150
-sleep_time = 1.5
+sleep_time = 1.0
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
 #open Raspi GPIO serial port, speed 115200 for Roomba 5xx
@@ -51,11 +51,6 @@ while(True):
 	tic = time.time()
 	# Reset the position vector for each frame
 	position_vector = [0, 0, 0, 0]
-	#Scan the room rotate in steps very slowly
-	rn = np.random.random(1)
-	print ('[INFO] Turning and scanning now . . . ')
-	roomba_rotate(ser, angle_steps,velocity)
-	time.sleep(1)
 	ret, image = cap.read()
 	# Gives error after last frame of video because its Nonetype so added exception for when ret ==  False
 	if ret == False:  # GET OUT
