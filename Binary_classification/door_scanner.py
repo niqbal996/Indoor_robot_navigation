@@ -15,7 +15,7 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 velocity = 20 #in mm/s
 angle_steps = 10
 distance_steps=150
-sleep_time = 1.0
+sleep_time = 2
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
 #open Raspi GPIO serial port, speed 115200 for Roomba 5xx
@@ -112,16 +112,17 @@ while(True):
 		print('[INFO] Moving forward . . .')
 		roomba_move(ser,distance_steps,velocity)
 		time.sleep(sleep_time)
-	# Turn left
-	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
-		print ('[INFO] Turning left',angle_steps, ' degrees now')
-		roomba_rotate(ser,angle_steps,velocity)
-		time.sleep(sleep_time)
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
 		print ('[INFO] Turning right',angle_steps, 'degrees now')
 		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
 		time.sleep(sleep_time)
+	# Turn left
+	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
+		print ('[INFO] Turning left',angle_steps, ' degrees now')
+		roomba_rotate(ser,angle_steps,velocity)
+		time.sleep(sleep_time)
+
 	else:
 		print('[INFO] Continue looking for room exit . . .')
 		roomba_rotate(ser, angle_steps, velocity) # Keep looking until it finds the door
