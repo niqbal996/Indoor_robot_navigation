@@ -1,5 +1,17 @@
-# USAGE
-# python train_network.py --dataset images --model santa_not_santa.model
+'''
+This script takes in the images dataset and generates a binary classifier neural network which
+can be used by the door_scanner.py script to detect doors.
+Dataset:
+	The images should be in /images/door and /image/notdoor folder
+Usage:
+	python train_network.py --dataset images --model model_name.model
+Arguments:
+	--dataset or -d:  the folder which contains the images to be used for the training and validation
+	--model or -m: The name of the output model to be generated
+
+NOTE: if the image names have spaces in the them then this script throws an error. In order to deal with that,
+use sort_dataset.py before running the training script.
+'''
 
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib

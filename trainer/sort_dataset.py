@@ -1,3 +1,6 @@
+'''Takes the images from the dataset and sort them with numbers. This takes care of the error appearing for the
+image names with spaces in it. Only used if necessary during the training phase.'''
+
 import os
 from shutil import move
 
@@ -17,7 +20,5 @@ for key in range(0, len(files_negative)):
     current_file = '%06d' % key + '.jpg'
     os.rename((neg + files_negative[key]), current_file)
     move(current_file, (neg + current_file))
-
-
 
 print ('[INFO] Output status ' + str(len(files_positive)) + ' positive and ' + str(len(files_negative)) + ' negative files have been renamed and moved')
