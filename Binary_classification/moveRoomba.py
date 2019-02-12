@@ -19,7 +19,7 @@ def roomba_rotate(serialObj,angle,velocity):
 	# so angle_rad = angle_deg*pi/180
 	w = velocity/129.0
 	time_sleep = (abs(angle)*3.14)/float(w*180)
-	print (time_sleep)
+	#print (time_sleep)
 	if angle > 0:
 		serialObj.write(b'\x89'+chr(velocity/256)+chr(velocity%256)+b'\x00\x01')
 	else:

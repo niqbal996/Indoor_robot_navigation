@@ -118,16 +118,17 @@ while(True):
 			time.sleep(sleep_time)
 		print('[INFO] Moving forward . . .')
 
-	# Turn left
-	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
-		print ('[INFO] Turning left',angle_steps, ' degrees now')
-		roomba_rotate(ser,angle_steps,velocity)
-		time.sleep(sleep_time)
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
 		print ('[INFO] Turning right',angle_steps, 'degrees now')
 		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
 		time.sleep(sleep_time)
+	# Turn left
+	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
+		print ('[INFO] Turning left',angle_steps, ' degrees now')
+		roomba_rotate(ser,angle_steps,velocity)
+		time.sleep(sleep_time)
+
 	else:
 		print('[INFO] Continue looking for room exit . . .')
 		roomba_rotate(ser, angle_steps, velocity) # Keep looking until it finds the door
