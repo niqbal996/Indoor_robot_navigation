@@ -15,7 +15,8 @@ from moveRoomba import roomba_rotate, roomba_move,roomba_stop
 velocity = 20 #in mm/s
 angle_steps = 10
 distance_steps=150
-sleep_time = 1.5
+sleep_time = 1.0
+scanning_phase = True
 ports=serial.tools.list_ports.comports()
 print("Ports: ", ports)
 #open Raspi GPIO serial port, speed 115200 for Roomba 5xx
@@ -46,16 +47,12 @@ time.sleep(1)
 ser.write(b'\x82')
 time.sleep(2)
 
+prev_image = []
 position_vector = [0, 0, 0, 0]
 while(True):
 	tic = time.time()
 	# Reset the position vector for each frame
 	position_vector = [0, 0, 0, 0]
-	#Scan the room rotate in steps very slowly
-	rn = np.random.random(1)
-	print ('[INFO] Turning and scanning now . . . ')
-	roomba_rotate(ser, angle_steps,velocity)
-	time.sleep(1)
 	ret, image = cap.read()
 	# Gives error after last frame of video because its Nonetype so added exception for when ret ==  False
 	if ret == False:  # GET OUT
@@ -107,16 +104,20 @@ while(True):
 		# show the output image
 		toc = time.time()
 
-	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-	cv2.imshow("Output", orig)
-	if cv2.waitKey(1) & 0xFF == ord('q'):
-		break
 	#Go straight
 	if (position_vector[1] == 1  and position_vector[2] == 1) or (np.count_nonzero(position_vector) > 1):
 		# Move towards the door slowly
+		if scanning_phase == True:
+			scanning_phase = False
+			roomba_rotate(ser,-2*angle_steps,velocity)
+			time.sleep(2*sleep_time)
+			roomba_move(ser, distance_steps, velocity)
+			time.sleep(sleep_time)
+		else:
+			roomba_move(ser, distance_steps, velocity)
+			time.sleep(sleep_time)
 		print('[INFO] Moving forward . . .')
-		roomba_move(ser,distance_steps,velocity)
-		time.sleep(sleep_time)
+
 	# Turn left
 	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
 		print ('[INFO] Turning left',angle_steps, ' degrees now')
@@ -131,6 +132,12 @@ while(True):
 		print('[INFO] Continue looking for room exit . . .')
 		roomba_rotate(ser, angle_steps, velocity) # Keep looking until it finds the door
 		time.sleep(sleep_time)
+	if scanning_phase==False and np.count_zero(position_vector) == 0:
+		scanning_phase == True
+	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+	cv2.imshow("Output", orig)
+	if cv2.waitKey(1) & 0xFF == ord('q'):
+		break
 #stop,speed 0:
 ser.write(b'\x89\x00\x00\x00\x00')
 time.sleep(0.2)
