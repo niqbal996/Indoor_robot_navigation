@@ -1,3 +1,17 @@
+'''
+Author: Naeem Iqbal
+Email : naeemiqbal996@gmail.com
+Supervisor:Prof. Dr.-Ing. Gerald Schuller
+Email: gerald.schuller@tu-ilmenau.de
+
+Script for scanning the door images in the Office room and then moving towards it using a neural network
+The Neural network is trained from the videos of the office room. Can be extended to any room provided the training data and model from it.
+
+Usage: in python console run:
+sudo python door_scanner.py -m doornotdooroffice.model
+if not sudo then the Pi does not give access to the ports.
+'''
+
 from keras.preprocessing.image import img_to_array
 from keras.models import load_model
 import numpy as np
@@ -6,11 +20,6 @@ import cv2
 import time
 import serial.tools.list_ports
 from moveRoomba import roomba_rotate, roomba_move,roomba_stop
-
-# for moving anything
-# [137][velocity high byte][velocity low byte][radius high byte][radius low byte]
-# to move straight : radius = 32768 or 0x8000
-# to rotate in place : radius = 0x0001
 
 velocity = 20 #in mm/s
 angle_steps = 10
@@ -29,8 +38,6 @@ print(ser.name)         # check which port was really used
 ap = argparse.ArgumentParser()
 ap.add_argument("-m", "--model", required=True,
         help="path to trained model model")
-#ap.add_argument("-i", "--image", required=True,
-#        help="path to input image")
 args = vars(ap.parse_args())
 cap = cv2.VideoCapture(0)       			#Feed from camera
 #cap = cv2.VideoCapture('Log_video_1.avi')	#Feed from video recording
@@ -106,34 +113,38 @@ while(True):
 
 	#Go straight
 	if (position_vector[1] == 1  and position_vector[2] == 1) or (np.count_nonzero(position_vector) > 1):
-		# Move towards the door slowly
+		print ('hello')
 		if scanning_phase == True:
+            #Reset the scanning phase
 			scanning_phase = False
+            #Added as a robustness measure to deal with the frame delay.
 			roomba_rotate(ser,-2*angle_steps,velocity)
 			time.sleep(2*sleep_time)
+            #Once aligned now move straight
 			roomba_move(ser, distance_steps, velocity)
 			time.sleep(sleep_time)
 		else:
+            #No scanning phase only move forward without turning
 			roomba_move(ser, distance_steps, velocity)
 			time.sleep(sleep_time)
-		print('[INFO] Moving forward . . .')
 
 	#Turn right
 	elif (position_vector[2] == 0  and position_vector[1] == 1) or (position_vector[0]):
-		print ('[INFO] Turning right',angle_steps, 'degrees now')
+		print ('[INFO] Turning right'+ str(angle_steps)+'degrees now')
 		roomba_rotate(ser,-angle_steps,velocity) #-ve angle goes in the clockwise/ right direction.
 		time.sleep(sleep_time)
 	# Turn left
 	elif (position_vector[2] == 1  and position_vector[3] == 1) or (position_vector[3]):
-		print ('[INFO] Turning left',angle_steps, ' degrees now')
+		print ('[INFO] Turning left '+ str(angle_steps)+ ' degrees now')
 		roomba_rotate(ser,angle_steps,velocity)
 		time.sleep(sleep_time)
-
+    #otherwise continue looking for door images ---> Scanning
 	else:
 		print('[INFO] Continue looking for room exit . . .')
 		roomba_rotate(ser, angle_steps, velocity) # Keep looking until it finds the door
 		time.sleep(sleep_time)
-	if scanning_phase==False and np.count_zero(position_vector) == 0:
+	# If scanning phase is False already and there are no door subframes in the image, set the scanning phase to True.
+	if scanning_phase==False and np.count_nonzero(position_vector) == 0:
 		scanning_phase == True
 	cv2.putText(orig, str(1.0 / (toc - tic)) + ' FPS', (10, 470), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
 	cv2.imshow("Output", orig)

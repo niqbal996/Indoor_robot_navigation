@@ -8,12 +8,6 @@ def roomba_start(serialObj):
 	serialObj.write(b'\x82')
 	time.sleep(1)
 
-
-# for moving anything
-# [137][velocity high byte][velocity low byte][radius high byte][radius low byte]
-# to move straight : radius = 32768 or 0x8000
-# to rotate in place : radius = 0x0001		
-
 def roomba_rotate(serialObj,angle,velocity):
 	# velocity in mm/s (v=wr, w = vr , r = 258/2 mm, so w = v*2/258) , angle specified in degrees..
 	# so angle_rad = angle_deg*pi/180
