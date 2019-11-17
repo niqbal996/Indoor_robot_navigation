@@ -1,4 +1,4 @@
-# Door finder robot
+# Indoor robot navigation
 Door finder robot turns and scans the room for door images and if it has well trained neural network trained for that room,
 it will move towards the door.
 
