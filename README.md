@@ -1,6 +1,9 @@
 # Indoor robot navigation
-Door finder robot turns and scans the room for door images and if it has well trained neural network trained for that room,
-it will move towards the door.
+The robot scans the room for door archways and locks onto that to exit the room autonomously. The robot functions using object detection approach with a basic LeNet model on 480p SD resolution images.  
+
+## Installation and hardware
+* If you are using the Roomba vacuum cleaner as a robot, then you need to make a [serial interface](https://makezine.com/2008/02/29/how-to-make-a-roomba-seri/) for communicating with Raspberry PI. 
+* Install tensorflow and python3 on Raspberry Pi. 
 
 ## Record training data
 1. Record 640*480 resolution videos from the room.
@@ -27,9 +30,12 @@ sudo python door_scanner.py -m name_of_output_model.model
 ```
 NOTE: I ran it in sudo mode to make sure the Pi gives it access to its ports for serial interface communication with the Roomba. 
 
+## TODO
+
+
 ## License
 Can be used for educational purposes only with permission. 
 
-## Credits
-[Prof. Dr.-Ing. Gerald Schuller](https://www.tu-ilmenau.de/mt-ams/personen/schuller-gerald/)
-[Adrian Rosebrock](https://www.pyimagesearch.com/)
+## Acknowledgements
+* A small project done under the supervision of [Prof. Dr.-Ing. Gerald Schuller](https://www.tu-ilmenau.de/mt-ams/personen/schuller-gerald/)
+* The image detection model from [Adrian Rosebrock](https://www.pyimagesearch.com/) was extended for a video stream and combined with a raspberry Pi Roomba robot. 
