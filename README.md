@@ -31,7 +31,7 @@ sudo python door_scanner.py -m name_of_output_model.model
 NOTE: I ran it in sudo mode to make sure the Pi gives it access to its ports for serial interface communication with the Roomba. 
 
 ## TODO
-
+* Use 
 
 ## License
 Can be used for educational purposes only with permission. 
