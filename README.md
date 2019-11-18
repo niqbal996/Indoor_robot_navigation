@@ -1,6 +1,9 @@
 # Indoor robot navigation
 The robot scans the room for door archways and locks onto that to exit the room autonomously. The robot functions using object detection approach with a basic LeNet model on 480p SD resolution images.  
 
+A short demo of trained model tracking and moving toward door. The images of the door were provided as training data to the model. 
+[![Watch the video](https://i.imgur.com/wNWqVa1.png)](https://www.youtube.com/watch?v=ekJgOvNMv5E)
+
 ## Installation and hardware
 * If you are using the Roomba vacuum cleaner as a robot, then you need to make a [serial interface](https://makezine.com/2008/02/29/how-to-make-a-roomba-seri/) for communicating with Raspberry PI. 
 * Install tensorflow and python3 on Raspberry Pi. 
